@@ -10,6 +10,7 @@ import { router as syncRouter } from "./routes/sync";
 import { router as foldersRouter } from "./routes/folders";
 import { router as adminRouter } from "./routes/admin";
 import { router as adminDashboardRouter } from "./routes/admin_dashboard";
+import { router as accountRouter } from "./routes/account";
 import { initDb } from "./db/schema";
 import { scheduleExpiredFilesCleanup } from "./db/cleanup";
 
@@ -50,6 +51,7 @@ app.use("/api/sync", syncRouter);
 app.use("/", adminDashboardRouter);
 app.use("/", adminRouter);
 app.use("/", foldersRouter);
+app.use("/", accountRouter);
 app.use("/", uploadsRouter);
 app.use("/", downloadsRouter);
 

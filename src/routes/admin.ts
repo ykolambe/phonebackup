@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from "express";
 import { getDb, ObjectId } from "../db/mongo";
 import { requireAuth } from "./auth";
+import { deleteUserData } from "../db/userCleanup";
 
 export const router = Router();
 
@@ -378,38 +379,26 @@ router.post(
       return res.status(400).send("Invalid user id");
     }
 
-    const db = getDb();
-    const usersCol = db.collection("users");
-    const filesCol = db.collection<{
-      _id: ObjectId;
-      userId: ObjectId;
-      storagePath: string;
-    }>("files");
-    const batchesCol = db.collection("upload_batches");
-    const linksCol = db.collection("upload_links");
-    const foldersCol = db.collection("folders");
+    await deleteUserData(userId, { deleteUser: true });
 
-    const files = await filesCol.find({ userId }).toArray();
-    for (const file of files) {
-      try {
-        const filePath = require("node:path").resolve(file.storagePath);
-        const fs = require("node:fs");
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      } catch {
-        // ignore individual delete errors
-      }
+    return res.redirect("/admin/users");
+  },
+);
+
+router.post(
+  "/admin/users/:id/clear-data",
+  requireAuth,
+  requireAdmin,
+  async (req: Request, res: Response) => {
+    const userIdStr = String(req.params.id);
+    let userId: ObjectId;
+    try {
+      userId = new ObjectId(userIdStr);
+    } catch {
+      return res.status(400).send("Invalid user id");
     }
 
-    await Promise.all([
-      filesCol.deleteMany({ userId }),
-      batchesCol.deleteMany({ userId }),
-      linksCol.deleteMany({ userId }),
-      foldersCol.deleteMany({ userId }),
-    ]);
-
-    await usersCol.deleteOne({ _id: userId });
+    await deleteUserData(userId, { deleteUser: false });
 
     return res.redirect("/admin/users");
   },

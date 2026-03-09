@@ -121,6 +121,26 @@ exports.router.get("/u/:slug", async (req, res) => {
         .find({ userId: link.userId })
         .sort({ createdAt: 1 })
         .toArray();
+    // #region agent log
+    fetch("http://127.0.0.1:7243/ingest/cec716d8-6347-4395-8650-453b78f130af", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-Debug-Session-Id": "23c470",
+        },
+        body: JSON.stringify({
+            sessionId: "23c470",
+            runId: "mobile-upload",
+            hypothesisId: "H1",
+            location: "src/routes/uploads.ts:/u/:slug",
+            message: "Render upload page",
+            data: {
+                userAgent: req.headers["user-agent"] || "",
+            },
+            timestamp: Date.now(),
+        }),
+    }).catch(() => { });
+    // #endregion
     const ownerEmail = owner.email;
     return res.render("upload", { ownerEmail, slug, folders });
 });

@@ -109,6 +109,14 @@
                 </button>
               </form>
               <form
+                action="/admin/users/<%= user.id %>/clear-data"
+                method="post"
+                style="margin-left: 0.5rem;"
+                onsubmit="return confirm('Delete all files, folders, and upload links for this user from the server?');"
+              >
+                <button class="button" type="submit">Clear data</button>
+              </form>
+              <form
                 action="/admin/users/<%= user.id %>/delete"
                 method="post"
                 style="margin-left: 0.5rem;"

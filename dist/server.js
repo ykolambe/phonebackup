@@ -14,6 +14,7 @@ const sync_1 = require("./routes/sync");
 const folders_1 = require("./routes/folders");
 const admin_1 = require("./routes/admin");
 const admin_dashboard_1 = require("./routes/admin_dashboard");
+const account_1 = require("./routes/account");
 const schema_1 = require("./db/schema");
 const cleanup_1 = require("./db/cleanup");
 dotenv_1.default.config();
@@ -43,6 +44,7 @@ app.use("/api/sync", sync_1.router);
 app.use("/", admin_dashboard_1.router);
 app.use("/", admin_1.router);
 app.use("/", folders_1.router);
+app.use("/", account_1.router);
 app.use("/", uploads_1.router);
 app.use("/", downloads_1.router);
 app.get("/", (req, res) => {

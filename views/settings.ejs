@@ -66,6 +66,21 @@
         </p>
       </section>
 
+      <section class="card" style="margin-top: 1.5rem;">
+        <h2>Delete your account</h2>
+        <p class="muted">
+          This will permanently delete your account and all files, folders, and
+          upload links stored on the server. This action cannot be undone.
+        </p>
+        <form
+          action="/account/delete"
+          method="post"
+          onsubmit="return confirm('Are you sure you want to delete your account and all files from the server? This cannot be undone.');"
+        >
+          <button class="button danger" type="submit">Delete my account</button>
+        </form>
+      </section>
+
       <p>
         <a href="/batches">&larr; Back to your uploads</a>
       </p>

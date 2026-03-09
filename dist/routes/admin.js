@@ -37,6 +37,7 @@ exports.router = void 0;
 const express_1 = require("express");
 const mongo_1 = require("../db/mongo");
 const auth_1 = require("./auth");
+const userCleanup_1 = require("../db/userCleanup");
 exports.router = (0, express_1.Router)();
 async function requireAdmin(req, res, next) {
     const userIdStr = req.session.userId;
@@ -266,31 +267,18 @@ exports.router.post("/admin/users/:id/delete", auth_1.requireAuth, requireAdmin,
     catch {
         return res.status(400).send("Invalid user id");
     }
-    const db = (0, mongo_1.getDb)();
-    const usersCol = db.collection("users");
-    const filesCol = db.collection("files");
-    const batchesCol = db.collection("upload_batches");
-    const linksCol = db.collection("upload_links");
-    const foldersCol = db.collection("folders");
-    const files = await filesCol.find({ userId }).toArray();
-    for (const file of files) {
-        try {
-            const filePath = require("node:path").resolve(file.storagePath);
-            const fs = require("node:fs");
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-        catch {
-            // ignore individual delete errors
-        }
+    await (0, userCleanup_1.deleteUserData)(userId, { deleteUser: true });
+    return res.redirect("/admin/users");
+});
+exports.router.post("/admin/users/:id/clear-data", auth_1.requireAuth, requireAdmin, async (req, res) => {
+    const userIdStr = String(req.params.id);
+    let userId;
+    try {
+        userId = new mongo_1.ObjectId(userIdStr);
     }
-    await Promise.all([
-        filesCol.deleteMany({ userId }),
-        batchesCol.deleteMany({ userId }),
-        linksCol.deleteMany({ userId }),
-        foldersCol.deleteMany({ userId }),
-    ]);
-    await usersCol.deleteOne({ _id: userId });
+    catch {
+        return res.status(400).send("Invalid user id");
+    }
+    await (0, userCleanup_1.deleteUserData)(userId, { deleteUser: false });
     return res.redirect("/admin/users");
 });
