@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your folders - Phone Backup Portal</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="topbar">
+        <h1>Your folders</h1>
+        <nav>
+          <a class="button" href="/batches">Uploads</a>
+          <a class="button" href="/settings">Settings</a>
+        </nav>
+      </header>
+
+      <section class="card form">
+        <h2>Step 1: Create folders</h2>
+        <p class="muted">
+          Folders are labels for where you plan to save files on your computer
+          (for example: “HomeMac”, “OfficePC”, “Trip2026”).
+        </p>
+        <form action="/folders" method="post" class="form">
+          <label>
+            Folder name (for your reference)
+            <input
+              type="text"
+              name="name"
+              required
+              placeholder="e.g. HomeMacPhotos"
+            />
+          </label>
+          <button class="button primary" type="submit">Create folder</button>
+        </form>
+      </section>
+
+      <section style="margin-top: 1.5rem;">
+        <h2>Step 2: Download to this computer</h2>
+        <% if (!folders || folders.length === 0) { %>
+        <p>You don't have any folders yet.</p>
+        <% } else { %>
+        <ul class="list">
+          <% folders.forEach(function (folder) { %>
+          <li class="card list-item">
+            <div>
+              <div class="title"><%= folder.name %></div>
+              <div class="muted">
+                Created
+                <%= new Date(folder.created_at).toLocaleString() %> •
+                <%= folder.file_count %> file(s) •
+                <%= (folder.total_bytes / (1024 * 1024)).toFixed(2) %> MB
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <% if (folder.file_count > 0) { %>
+              <a
+                class="button primary"
+                href="/folders/<%= folder.id %>/download-all"
+                >Download everything to this computer</a
+              >
+              <form
+                action="/folders/<%= folder.id %>/clear"
+                method="post"
+                onsubmit="return confirm('Delete all files in this folder from the server?');"
+              >
+                <button class="button" type="submit">Clear files</button>
+              </form>
+              <% } else { %>
+              <span class="muted">Nothing to download</span>
+              <% } %>
+              <form
+                action="/folders/<%= folder.id %>/delete"
+                method="post"
+                onsubmit="return confirm('Delete this folder and all its files from the server?');"
+              >
+                <button class="button" type="submit">Delete folder</button>
+              </form>
+            </div>
+          </li>
+          <% }); %>
+        </ul>
+        <p class="muted" style="margin-top: 0.75rem;">
+          Tip: To choose the folder on your computer each time, enable
+          “ask where to save each download” in your browser’s download settings.
+        </p>
+        <% } %>
+      </section>
+    </main>
+  </body>
+</html>
+

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Overview</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="card">
+          <h2>Admin</h2>
+          <nav class="admin-nav">
+            <a class="admin-nav-link active" href="/admin">Overview</a>
+            <a class="admin-nav-link" href="/admin/users">Users</a>
+            <a class="admin-nav-link" href="/admin/plans">Plans</a>
+            <a class="admin-nav-link" href="/settings">Back to app</a>
+          </nav>
+        </div>
+      </aside>
+      <section class="admin-main">
+        <header class="topbar">
+          <h1>Overview</h1>
+        </header>
+
+        <section class="card">
+          <h2>Users & data</h2>
+          <p>
+            <strong><%= userCount %></strong> user(s)
+          </p>
+          <p>
+            <strong><%= totalFiles %></strong> file(s) stored using
+            <strong><%= (totalUsedBytes / (1024 * 1024 * 1024)).toFixed(2) %>
+              GB</strong>
+          </p>
+          <p>
+            Total allocated storage (sum of all user plans):
+            <strong
+              ><%= (totalAllocatedBytes / (1024 * 1024 * 1024)).toFixed(2) %>
+              GB</strong
+            >
+          </p>
+          <% if (totalAllocatedBytes > 0) { %>
+          <p class="muted">
+            Approx. logical utilization:
+            <strong
+              ><%= ((totalUsedBytes / totalAllocatedBytes) * 100).toFixed(1) %>%</strong
+            >
+          </p>
+          <% } %>
+        </section>
+
+        <section class="card" style="margin-top: 1.5rem;">
+          <h2>Disk usage</h2>
+          <p class="muted">
+            Upload files are stored in:
+            <code><%= storageRoot %></code>
+          </p>
+          <p>
+            Current disk space used by uploaded files:
+            <strong><%= (diskUsedBytes / (1024 * 1024 * 1024)).toFixed(2) %>
+              GB</strong>
+          </p>
+          <p class="muted">
+            This is calculated by summing file sizes in the upload directory.
+            OS-level free space is not shown here.
+          </p>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
+

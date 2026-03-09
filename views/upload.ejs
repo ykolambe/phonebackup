@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Upload to <%= ownerEmail %></title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Send photos to <%= ownerEmail %></h1>
+      <p class="muted">
+        Step 1: choose folder • Step 2: choose photos/videos • Step 3: upload.
+      </p>
+      <form
+        action="/u/<%= slug %>/upload"
+        method="post"
+        enctype="multipart/form-data"
+        class="card form"
+      >
+        <% if (Array.isArray(folders) && folders.length > 0) { %>
+        <label>
+          Choose folder (created on desktop)
+          <select name="folderId" required>
+            <option value="" disabled selected hidden>Select a folder</option>
+            <% folders.forEach(function(folder) { %>
+            <option value="<%= folder._id %>"><%= folder.name %></option>
+            <% }); %>
+          </select>
+        </label>
+        <% } else { %>
+        <p class="muted">
+          No folders are set up yet. On your computer, go to Settings → Folders,
+          create at least one folder, then reload this page.
+        </p>
+        <% } %>
+        <label>
+          Choose photos and videos
+          <input
+            type="file"
+            name="files"
+            multiple
+            accept="image/*,video/*"
+            required
+          />
+        </label>
+        <button
+          class="button primary"
+          type="submit"
+          <% if (!folders || !folders.length) { %>disabled<% } %>
+        >
+          Upload to selected folder
+        </button>
+      </form>
+      <p class="muted" style="margin-top: 1rem;">
+        Files are stored on the server for a limited time (for example 24
+        hours). After you download them to your computer, they are removed from
+        the server.
+      </p>
+    </main>
+  </body>
+</html>
+

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Settings - Phone Backup Portal</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="topbar">
+        <h1>Phone backup setup</h1>
+        <form action="/api/auth/logout" method="post">
+          <button class="button" type="submit">Log out</button>
+        </form>
+      </header>
+
+      <section class="card">
+        <h2>Step 1: Your upload link</h2>
+        <p>
+          Open this link on your phone to upload photos and videos to your
+          account:
+        </p>
+        <div class="upload-link"><%= uploadUrl %></div>
+        <% if (typeof uploadQrDataUrl !== "undefined" && uploadQrDataUrl) { %>
+        <p style="margin-top: 0.75rem;">Or scan this QR code:</p>
+        <img
+          src="<%= uploadQrDataUrl %>"
+          alt="QR code for your upload link"
+          style="max-width: 180px; background: #fff; padding: 0.5rem; border-radius: 0.75rem;"
+        />
+        <% } %>
+        <p class="muted">
+          Make sure your friends only share their personal upload link with
+          people they trust.
+        </p>
+      </section>
+
+      <section class="card" style="margin-top: 1.5rem;">
+        <h2>Step 2: Create folders & download</h2>
+        <p class="muted">
+          Folders are labels you use to group uploads. You choose one of your
+          folders on the phone when uploading, then download everything for that
+          folder on desktop.
+        </p>
+        <p>
+          <a class="button" href="/folders">Manage folders & download all</a>
+        </p>
+      </section>
+
+      <section class="card" style="margin-top: 1.5rem;">
+        <h2>Your server storage usage</h2>
+        <p class="muted">
+          You can keep up to 2 GB of files on the server. When you are done
+          with old uploads, delete them to free space before starting a large
+          new transfer.
+        </p>
+        <p>
+          <strong><%= fileCount %></strong> file(s) using
+          <strong><%= (totalBytes / (1024 * 1024)).toFixed(2) %> MB</strong> of
+          <strong><%= (maxBytes / (1024 * 1024 * 1024)).toFixed(1) %> GB</strong>
+          available.
+        </p>
+        <p class="muted">
+          To delete data from the server, go to your folders and remove files or
+          whole folders before uploading more.
+        </p>
+      </section>
+
+      <p>
+        <a href="/batches">&larr; Back to your uploads</a>
+      </p>
+    </main>
+  </body>
+</html>
+

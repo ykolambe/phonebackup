@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Users</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="card">
+          <h2>Admin</h2>
+          <nav class="admin-nav">
+            <a class="admin-nav-link" href="/admin">Overview</a>
+            <a class="admin-nav-link active" href="/admin/users">Users</a>
+            <a class="admin-nav-link" href="/admin/plans">Plans</a>
+            <a class="admin-nav-link" href="/settings">Back to app</a>
+          </nav>
+        </div>
+      </aside>
+      <section class="admin-main">
+        <header class="topbar">
+          <h1>Users & storage</h1>
+        </header>
+
+        <section class="card form">
+          <h2>Create a new user</h2>
+          <form action="/admin/users" method="post" class="form">
+            <label>
+              Email
+              <input type="email" name="email" required />
+            </label>
+            <label>
+              Temporary password
+              <input
+                type="password"
+                name="password"
+                required
+                minlength="6"
+                placeholder="Set an initial password"
+              />
+            </label>
+            <label>
+              Plan
+              <select name="planName">
+                <% plans.forEach(function (plan) { %>
+                <option value="<%= plan.name %>">
+                  <%= plan.name %> (
+                  <%= (plan.maxBytes / (1024 * 1024 * 1024)).toFixed(2) %> GB)
+                </option>
+                <% }); %>
+              </select>
+            </label>
+            <button class="button primary" type="submit">Create user</button>
+          </form>
+        </section>
+
+        <section style="margin-top: 1.5rem;">
+          <% if (!users || users.length === 0) { %>
+          <p>No users yet.</p>
+          <% } else { %>
+          <ul class="list">
+            <% users.forEach(function (user) { %>
+            <li class="card list-item">
+              <div>
+                <div class="title"><%= user.email %></div>
+                <div class="muted">
+                  Plan:
+                  <strong><%= user.planName %></strong> •
+                  <%= user.fileCount %> file(s) •
+                  <%= (user.totalBytes / (1024 * 1024)).toFixed(2) %> MB used of
+                  <%= (user.maxBytes / (1024 * 1024 * 1024)).toFixed(2) %> GB
+                  •
+                  <% if (user.isVerified) { %>Verified<% } else { %>Not
+                  verified<% } %> •
+                  <% if (user.isDisabled) { %>Disabled<% } else { %>Active<% } %>
+                </div>
+              </div>
+              <form
+                action="/admin/users/<%= user.id %>/plan"
+                method="post"
+                class="form"
+                style="flex-direction: row; gap: 0.5rem;"
+              >
+                <label>
+                  <span class="muted">Change plan</span>
+                  <select name="planName">
+                    <% plans.forEach(function (plan) { %>
+                    <option
+                      value="<%= plan.name %>"
+                      <% if (plan.name === user.planName) { %>selected<% } %>
+                    >
+                      <%= plan.name %> (
+                      <%= (plan.maxBytes / (1024 * 1024 * 1024)).toFixed(2) %>
+                      GB)
+                    </option>
+                    <% }); %>
+                  </select>
+                </label>
+                <button class="button primary" type="submit">Update</button>
+              </form>
+              <form
+                action="/admin/users/<%= user.id %>/<%= user.isDisabled ? 'enable' : 'disable' %>"
+                method="post"
+                style="margin-left: 0.5rem;"
+              >
+                <button class="button" type="submit">
+                  <%= user.isDisabled ? 'Enable' : 'Disable' %>
+                </button>
+              </form>
+              <form
+                action="/admin/users/<%= user.id %>/delete"
+                method="post"
+                style="margin-left: 0.5rem;"
+                onsubmit="return confirm('Delete this user and all their files from the server?');"
+              >
+                <button class="button" type="submit">Delete</button>
+              </form>
+            </li>
+            <% }); %>
+          </ul>
+          <% } %>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
+

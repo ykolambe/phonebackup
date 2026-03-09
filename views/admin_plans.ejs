@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin - Plans</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="admin-layout">
+      <aside class="admin-sidebar">
+        <div class="card">
+          <h2>Admin</h2>
+          <nav class="admin-nav">
+            <a class="admin-nav-link" href="/admin">Overview</a>
+            <a class="admin-nav-link" href="/admin/users">Users</a>
+            <a class="admin-nav-link active" href="/admin/plans">Plans</a>
+            <a class="admin-nav-link" href="/settings">Back to app</a>
+          </nav>
+        </div>
+      </aside>
+      <section class="admin-main">
+        <header class="topbar">
+          <h1>Plans</h1>
+        </header>
+
+        <section class="card form">
+          <h2>Create or update a plan</h2>
+          <p class="muted">
+            Plans control how much storage each user can use. Assign a plan to a
+            user in the Users tab.
+          </p>
+          <form action="/admin/plans" method="post" class="form">
+            <label>
+              Plan name
+              <input
+                type="text"
+                name="name"
+                required
+                placeholder="e.g. free, friend, pro"
+              />
+            </label>
+            <label>
+              Max storage (GB)
+              <input
+                type="number"
+                name="maxGb"
+                step="0.1"
+                min="0.1"
+                required
+                placeholder="e.g. 2"
+              />
+            </label>
+            <button class="button primary" type="submit">
+              Save plan
+            </button>
+          </form>
+        </section>
+
+        <section style="margin-top: 1.5rem;">
+          <h2>Existing plans</h2>
+          <% if (!plans || plans.length === 0) { %>
+          <p>No plans defined yet. The default plan is created automatically on server start.</p>
+          <% } else { %>
+          <ul class="list">
+            <% plans.forEach(function (plan) { %>
+            <li class="card list-item">
+              <div>
+                <div class="title"><%= plan.name %></div>
+                <div class="muted">
+                  Max:
+                  <%= (plan.maxBytes / (1024 * 1024 * 1024)).toFixed(2) %> GB
+                  <% if (plan.createdAt) { %> • Created
+                  <%= new Date(plan.createdAt).toLocaleString() %> <% } %>
+                </div>
+              </div>
+            </li>
+            <% }); %>
+          </ul>
+          <% } %>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>
+

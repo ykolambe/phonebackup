@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your uploads - Phone Backup Portal</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="topbar">
+        <h1>Your uploads</h1>
+        <nav>
+          <a class="button" href="/settings">Upload link</a>
+          <form action="/api/auth/logout" method="post" style="display:inline;">
+            <button class="button" type="submit">Log out</button>
+          </form>
+        </nav>
+      </header>
+
+      <% if (!batches || batches.length === 0) { %>
+      <p>You don't have any uploads yet.</p>
+      <p>
+        Go to <a href="/settings">your upload link</a> and open it on your
+        phone to start uploading.
+      </p>
+      <% } else { %>
+      <ul class="list">
+        <% batches.forEach(function (batch) { %>
+        <li class="card list-item">
+          <div>
+            <div class="title">
+              Batch #<%= batch.id %>
+              <% if (batch.title) { %>- <%= batch.title %><% } %>
+            </div>
+            <div class="muted">
+              <%= new Date(batch.created_at).toLocaleString() %>
+            </div>
+          </div>
+          <a class="button" href="/batches/<%= batch.id %>">View files</a>
+        </li>
+        <% }); %>
+      </ul>
+      <% } %>
+    </main>
+  </body>
+</html>
+

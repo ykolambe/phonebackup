@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Verify email - Phone Backup Portal</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Verify your email</h1>
+      <p class="muted">
+        We have sent a 6-digit verification code to your email address. Enter it
+        below to finish creating your account.
+      </p>
+      <% if (typeof error !== "undefined" && error) { %>
+      <div class="alert"><%= error %></div>
+      <% } %>
+      <form action="/api/auth/verify" method="post" class="card form">
+        <label>
+          Email
+          <input
+            type="email"
+            name="email"
+            value="<%= email %>"
+            required
+            autocomplete="email"
+          />
+        </label>
+        <label>
+          Verification code
+          <input
+            type="text"
+            name="code"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            required
+            autocomplete="one-time-code"
+            placeholder="6-digit code"
+          />
+        </label>
+        <button class="button primary" type="submit">Verify</button>
+      </form>
+      <p class="muted" style="margin-top: 0.75rem;">
+        If you don't see the email, check your spam folder. To resend a code,
+        try logging in again.
+      </p>
+    </main>
+  </body>
+</html>
+
