@@ -11,6 +11,20 @@ export const router = Router();
 const STORAGE_ROOT =
   process.env.STORAGE_ROOT || path.join(process.cwd(), "uploads");
 
+function parseAllowedExtensions(): Set<string> | null {
+  const raw = process.env.ALLOWED_FILE_EXTENSIONS?.trim();
+  if (!raw) return null;
+  const parts = raw.split(",").map((p) => p.trim().toLowerCase()).filter(Boolean);
+  if (parts.length === 0) return null;
+  const set = new Set<string>();
+  for (const p of parts) {
+    set.add(p.startsWith(".") ? p : `.${p}`);
+  }
+  return set;
+}
+
+const ALLOWED_EXTENSIONS = parseAllowedExtensions();
+
 fs.mkdirSync(STORAGE_ROOT, { recursive: true });
 
 const storage = multer.diskStorage({
@@ -264,6 +278,33 @@ router.post(
       return res
         .status(400)
         .send("No files uploaded. Please choose at least one file.");
+    }
+
+    if (ALLOWED_EXTENSIONS !== null) {
+      const disallowed: string[] = [];
+      for (const file of files) {
+        const ext = path.extname(file.originalname).toLowerCase() || "";
+        if (!ALLOWED_EXTENSIONS.has(ext)) {
+          disallowed.push(ext || "(no extension)");
+        }
+      }
+      if (disallowed.length > 0) {
+        for (const file of files) {
+          try {
+            if (file.path && fs.existsSync(file.path)) {
+              fs.unlinkSync(file.path);
+            }
+          } catch {
+            // ignore
+          }
+        }
+        const allowedList = [...ALLOWED_EXTENSIONS].sort().join(", ");
+        return res
+          .status(400)
+          .send(
+            `File type not allowed: ${[...new Set(disallowed)].join(", ")}. Allowed: ${allowedList}`,
+          );
+      }
     }
 
     const existingUsage = await filesCol
